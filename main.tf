@@ -8,7 +8,12 @@ resource "azurerm_resource_group" "main" {
 // --=== KEY VAULT ===--
 resource "random_password" "postgres_password" {
   length  = 8
-  special = true
+  special = false
+}
+
+resource "random_password" "mongodb_password" {
+  length  = 8
+  special = false
 }
 
 data "azurerm_client_config" "current" {}
@@ -70,6 +75,18 @@ resource "azurerm_key_vault_secret" "postgresql_password" {
   key_vault_id = azurerm_key_vault.main.id
 }
 
+resource "azurerm_key_vault_secret" "mongodb_login" {
+  name         = "mongodb-login"
+  value        = "adminpostgres"
+  key_vault_id = azurerm_key_vault.main.id
+}
+
+resource "azurerm_key_vault_secret" "mongodb_password" {
+  name         = "mongodb-password"
+  value        = random_password.mongodb_password.result
+  key_vault_id = azurerm_key_vault.main.id
+}
+
 
 // --=== POSTGRESQL DATABASE ===--
 /*resource "azurerm_virtual_network" "main" {
@@ -119,12 +136,55 @@ resource "azurerm_postgresql_flexible_server" "main" {
   public_network_access_enabled = true
   administrator_login           = azurerm_key_vault_secret.postgresql_login.value
   administrator_password        = azurerm_key_vault_secret.postgresql_password.value
-  //zone                          = "1"
-  storage_mb   = 32768
-  storage_tier = "P4"
-  sku_name     = "B_Standard_B1ms"
+  storage_mb                    = 32768
+  storage_tier                  = "P4"
+  sku_name                      = "B_Standard_B1ms"
 
 
   //depends_on = [azurerm_private_dns_zone_virtual_network_link.main]
+}
 
+// ---== MongoDB ==---
+resource "azurerm_cosmosdb_account" "main" {
+  name                          = "mongo-account-scrap-app"
+  location                      = azurerm_resource_group.main.location
+  resource_group_name           = azurerm_resource_group.main.name
+  offer_type                    = "Standard"
+  kind                          = "MongoDB"
+  free_tier_enabled             = true
+  public_network_access_enabled = true
+  mongo_server_version          = "7.0"
+
+  consistency_policy {
+    consistency_level = "Session"
+  }
+
+  geo_location {
+    location          = azurerm_resource_group.main.location
+    failover_priority = 0
+  }
+
+  capabilities {
+    name = "EnableMongo"
+  }
+
+  ip_range_filter = ["0.0.0.0/0"]
+}
+
+resource "azurerm_cosmosdb_mongo_database" "main" {
+  name                = "mongo-db-scrap-app"
+  resource_group_name = azurerm_cosmosdb_account.main.resource_group_name
+  account_name        = azurerm_cosmosdb_account.main.name
+  throughput          = 400
+}
+
+resource "azurerm_cosmosdb_mongo_collection" "main" {
+  name                = "mongo-collection-scrap-app"
+  resource_group_name = azurerm_cosmosdb_account.main.resource_group_name
+  account_name        = azurerm_cosmosdb_account.main.name
+  database_name       = azurerm_cosmosdb_mongo_database.main.name
+
+  default_ttl_seconds = 777
+  shard_key           = "_id"
+  throughput          = 400
 }
