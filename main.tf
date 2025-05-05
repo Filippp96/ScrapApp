@@ -39,10 +39,6 @@ resource "azurerm_key_vault" "main" {
     secret_permissions = [
       "Get", "List", "Set", "Delete", "Recover", "Backup", "Restore", "Purge"
     ]
-
-    storage_permissions = [
-      "Get", "Set", "List", "Delete"
-    ]
   }
 
   access_policy {
@@ -59,6 +55,19 @@ resource "azurerm_key_vault" "main" {
 
     storage_permissions = [
       "Get", "Set", "List", "Delete"
+    ]
+  }
+
+    access_policy {
+    tenant_id = data.azurerm_client_config.current.tenant_id
+    object_id = "551847a6-3b88-4456-bde7-9919ab74eea2"
+
+    key_permissions = [
+      "Get", "List", "Update", "Create", "Import", "Delete", "Recover", "Backup", "Restore", "Decrypt", "Encrypt", "UnwrapKey", "WrapKey", "Verify", "Sign", "Purge", "Release", "Rotate", "GetRotationPolicy", "SetRotationPolicy"
+    ]
+
+    secret_permissions = [
+      "Get", "List", "Set", "Delete", "Recover", "Backup", "Restore", "Purge"
     ]
   }
 }
