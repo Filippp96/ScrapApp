@@ -28,11 +28,11 @@ resource "azurerm_key_vault" "main" {
     object_id = data.azurerm_client_config.current.object_id
 
     key_permissions = [
-      "Get", "Set", "List", "Delete"
+      "Get", "List", "Update", "Create", "Import", "Delete", "Recover", "Backup", "Restore", "Decrypt", "Encrypt", "UnwrapKey", "WrapKey", "Verify", "Sign", "Purge", "Release", "Rotate", "GetRotationPolicy", "SetRotationPolicy"
     ]
 
     secret_permissions = [
-      "Get", "Set", "List", "Delete"
+      "Get", "List", "Set", "Delete", "Recover", "Backup", "Restore", "Purge"
     ]
 
     storage_permissions = [
@@ -43,7 +43,7 @@ resource "azurerm_key_vault" "main" {
 
 resource "azurerm_key_vault_secret" "postgresql_login" {
   name         = "postgresql-login"
-  value        = "admin"
+  value        = "adminpostgres"
   key_vault_id = azurerm_key_vault.main.id
 }
 
@@ -55,7 +55,7 @@ resource "azurerm_key_vault_secret" "postgresql_password" {
 
 
 // --=== POSTGRESQL DATABASE ===--
-resource "azurerm_virtual_network" "main" {
+/*resource "azurerm_virtual_network" "main" {
   name                = "postgresqlVnet052025"
   location            = azurerm_resource_group.main.location
   resource_group_name = azurerm_resource_group.main.name
@@ -78,6 +78,7 @@ resource "azurerm_subnet" "main" {
     }
   }
 }
+
 resource "azurerm_private_dns_zone" "main" {
   name                = "example.postgres.database.azure.com"
   resource_group_name = azurerm_resource_group.main.name
@@ -89,23 +90,24 @@ resource "azurerm_private_dns_zone_virtual_network_link" "main" {
   virtual_network_id    = azurerm_virtual_network.main.id
   resource_group_name   = azurerm_resource_group.main.name
   depends_on            = [azurerm_subnet.main]
-}
+}*/
 
 resource "azurerm_postgresql_flexible_server" "main" {
-  name                          = "postgresql-scrap-app"
-  resource_group_name           = azurerm_resource_group.main.name
-  location                      = azurerm_resource_group.main.location
-  version                       = "12"
-  delegated_subnet_id           = azurerm_subnet.main.id
-  private_dns_zone_id           = azurerm_private_dns_zone.main.id
-  public_network_access_enabled = false
+  name                = "postgresql-scrap-app"
+  resource_group_name = azurerm_resource_group.main.name
+  location            = azurerm_resource_group.main.location
+  version             = "16"
+  //delegated_subnet_id           = azurerm_subnet.main.id
+  //private_dns_zone_id           = azurerm_private_dns_zone.main.id
+  public_network_access_enabled = true
   administrator_login           = azurerm_key_vault_secret.postgresql_login.value
   administrator_password        = azurerm_key_vault_secret.postgresql_password.value
-  zone                          = "1"
-  storage_mb                    = 32768
-  storage_tier                  = "P4"
-  sku_name                      = "B_Standard_B1ms"
+  //zone                          = "1"
+  storage_mb   = 32768
+  storage_tier = "P4"
+  sku_name     = "B_Standard_B1ms"
 
-  depends_on = [azurerm_private_dns_zone_virtual_network_link.main]
+
+  //depends_on = [azurerm_private_dns_zone_virtual_network_link.main]
 
 }
