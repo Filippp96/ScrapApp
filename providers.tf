@@ -7,7 +7,7 @@ terraform {
   }
 
   cloud {
-    organization = "deepdive_cg_fk"
+    organization = "ScrapApp"
     workspaces {
       name = "ScrapApp_Production"
     }
