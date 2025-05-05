@@ -4,7 +4,6 @@ resource "azurerm_resource_group" "main" {
   tags     = {}
 }
 
-
 // --=== KEY VAULT ===--
 resource "random_password" "postgres_password" {
   length  = 8
@@ -58,7 +57,7 @@ resource "azurerm_key_vault" "main" {
     ]
   }
 
-    access_policy {
+  access_policy {
     tenant_id = data.azurerm_client_config.current.tenant_id
     object_id = "551847a6-3b88-4456-bde7-9919ab74eea2"
 
