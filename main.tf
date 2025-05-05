@@ -39,6 +39,23 @@ resource "azurerm_key_vault" "main" {
       "Get", "Set", "List", "Delete"
     ]
   }
+
+  access_policy {
+    tenant_id = data.azurerm_client_config.current.tenant_id
+    object_id = "06506e2f-c03a-40cd-87ef-03c429dd9c52"
+
+    key_permissions = [
+      "Get", "List", "Update", "Create", "Import", "Delete", "Recover", "Backup", "Restore", "Decrypt", "Encrypt", "UnwrapKey", "WrapKey", "Verify", "Sign", "Purge", "Release", "Rotate", "GetRotationPolicy", "SetRotationPolicy"
+    ]
+
+    secret_permissions = [
+      "Get", "List", "Set", "Delete", "Recover", "Backup", "Restore", "Purge"
+    ]
+
+    storage_permissions = [
+      "Get", "Set", "List", "Delete"
+    ]
+  }
 }
 
 resource "azurerm_key_vault_secret" "postgresql_login" {
