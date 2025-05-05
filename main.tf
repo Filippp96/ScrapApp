@@ -167,8 +167,6 @@ resource "azurerm_cosmosdb_account" "main" {
   capabilities {
     name = "EnableMongo"
   }
-
-  ip_range_filter = ["0.0.0.0/0"]
 }
 
 resource "azurerm_cosmosdb_mongo_database" "main" {
