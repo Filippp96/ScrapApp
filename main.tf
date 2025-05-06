@@ -6,10 +6,10 @@ resource "azurerm_resource_group" "main" {
 
 // --=== POSTGRESQL DATABASE ===--
 resource "azurerm_postgresql_flexible_server" "main" {
-  name                = "postgresql-scrap-app"
-  resource_group_name = azurerm_resource_group.main.name
-  location            = azurerm_resource_group.main.location
-  version             = "16"
+  name                          = "postgresql-scrap-app"
+  resource_group_name           = azurerm_resource_group.main.name
+  location                      = azurerm_resource_group.main.location
+  version                       = "16"
   public_network_access_enabled = true
   administrator_login           = azurerm_key_vault_secret.postgresql_login.value
   administrator_password        = azurerm_key_vault_secret.postgresql_password.value

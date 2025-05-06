@@ -100,3 +100,15 @@ resource "azurerm_key_vault_secret" "mongodb_endpoint" {
   value        = azurerm_cosmosdb_account.main.endpoint
   key_vault_id = azurerm_key_vault.main.id
 }
+
+resource "azurerm_key_vault_secret" "vm_useradmin" {
+  name         = "vm-useradmin"
+  value        = var.vmUserAdmin
+  key_vault_id = azurerm_key_vault.main.id
+}
+
+resource "azurerm_key_vault_secret" "ssh_privatekey" {
+  name         = "ssh-private-key"
+  value        = tls_private_key.ssh_key.private_key_pem
+  key_vault_id = azurerm_key_vault.main.id
+}

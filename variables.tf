@@ -19,3 +19,7 @@ variable "objectKVP" {
   type        = string
   description = "ObjectID Piotrek"
 }
+
+variable "vmUserAdmin" {
+  type = string
+}
