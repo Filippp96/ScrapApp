@@ -112,3 +112,9 @@ resource "azurerm_key_vault_secret" "ssh_privatekey" {
   value        = tls_private_key.ssh_key.private_key_pem
   key_vault_id = azurerm_key_vault.main.id
 }
+
+resource "azurerm_key_vault_secret" "VM_public_IP" {
+  name         = "VM-public-IP"
+  value        = azurerm_public_ip.main.ip_address
+  key_vault_id = azurerm_key_vault.main.id
+}
