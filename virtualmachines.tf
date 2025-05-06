@@ -62,29 +62,31 @@ resource "tls_private_key" "ssh_key" {
   rsa_bits  = 4096
 }
 
-locals {
+/*locals {
   custom_data = <<CUSTOM_DATA
     #!/bin/bash
-    apt update -y
-    apt upgrade -y
 
-    apt install -y ca-certificates curl gnupg lsb-release
+    for pkg in docker.io docker-doc docker-compose docker-compose-v2 podman-docker containerd runc; do sudo apt-get remove $pkg; done
 
-    mkdir -p /etc/apt/keyrings
-    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+    sudo apt-get update -y
+    sudo apt-get upgrade -y
+    sudo apt-get -y install ca-certificates curl
+    sudo install -y -m 0755 -d /etc/apt/keyrings
+    sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+    sudo chmod a+r /etc/apt/keyrings/docker.asc
 
-    echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null
+    echo \
+    "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
+    $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}") stable" | \
+    sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+    sudo apt-get update -y
 
-    apt update -y
+    sudo systemctl start docker
+    sudo systemctl enable docker
 
-    apt install -y docker-ce docker-ce-cli containerd.io
-
-    systemctl start docker
-    systemctl enable docker
-
-    usermod -aG docker scrapappadmin
+    sudo usermod -aG docker scrapappadmin   
     CUSTOM_DATA
-}
+}*/
 
 resource "azurerm_linux_virtual_machine" "main" {
   name                            = "scrapAppVM"
@@ -112,10 +114,6 @@ resource "azurerm_linux_virtual_machine" "main" {
     offer     = "0001-com-ubuntu-server-jammy"
     sku       = "22_04-lts"
     version   = "latest"
-  }
-
-  tags = {
-    Recreated = "TRUE"
   }
 }
 
