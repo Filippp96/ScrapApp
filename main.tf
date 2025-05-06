@@ -42,7 +42,7 @@ resource "azurerm_key_vault" "main" {
 
   access_policy {
     tenant_id = data.azurerm_client_config.current.tenant_id
-    object_id = "06506e2f-c03a-40cd-87ef-03c429dd9c52"
+    object_id = var.objectKVF
 
     key_permissions = [
       "Get", "List", "Update", "Create", "Import", "Delete", "Recover", "Backup", "Restore", "Decrypt", "Encrypt", "UnwrapKey", "WrapKey", "Verify", "Sign", "Purge", "Release", "Rotate", "GetRotationPolicy", "SetRotationPolicy"
@@ -59,7 +59,7 @@ resource "azurerm_key_vault" "main" {
 
   access_policy {
     tenant_id = data.azurerm_client_config.current.tenant_id
-    object_id = "551847a6-3b88-4456-bde7-9919ab74eea2"
+    object_id = var.objectKVP
 
     key_permissions = [
       "Get", "List", "Update", "Create", "Import", "Delete", "Recover", "Backup", "Restore", "Decrypt", "Encrypt", "UnwrapKey", "WrapKey", "Verify", "Sign", "Purge", "Release", "Rotate", "GetRotationPolicy", "SetRotationPolicy"
@@ -149,9 +149,29 @@ resource "azurerm_postgresql_flexible_server" "main" {
   sku_name                      = "B_Standard_B1ms"
   zone                          = "1"
 
-
   //depends_on = [azurerm_private_dns_zone_virtual_network_link.main]
 }
+
+resource "azurerm_postgresql_flexible_server_firewall_rule" "allowFilip" {
+  name             = "FilipIP"
+  server_id        = azurerm_postgresql_flexible_server.main.id
+  start_ip_address = var.IPF
+  end_ip_address   = var.IPF
+}
+
+resource "azurerm_postgresql_flexible_server_firewall_rule" "allowPiotrekS" {
+  name             = "PiotrekSIP"
+  server_id        = azurerm_postgresql_flexible_server.main.id
+  start_ip_address = var.IPPS
+  end_ip_address   = var.IPPS
+}
+
+/*resource "azurerm_postgresql_flexible_server_firewall_rule" "allowPiotrekP" {
+  name             = "PiotrekPIP"
+  server_id        = azurerm_postgresql_flexible_server.main.id
+  start_ip_address = var.IPPP
+  end_ip_address   = var.IPPP
+}*/
 
 // ---== MongoDB ==---
 resource "azurerm_cosmosdb_account" "main" {
