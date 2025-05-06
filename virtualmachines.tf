@@ -62,6 +62,30 @@ resource "tls_private_key" "ssh_key" {
   rsa_bits  = 4096
 }
 
+locals {
+  custom_data = <<CUSTOM_DATA
+    #!/bin/bash
+    apt update -y
+    apt upgrade -y
+
+    apt install -y ca-certificates curl gnupg lsb-release
+
+    mkdir -p /etc/apt/keyrings
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+    apt update -y
+
+    apt install -y docker-ce docker-ce-cli containerd.io
+
+    systemctl start docker
+    systemctl enable docker
+
+    usermod -aG docker scrapappadmin
+    CUSTOM_DATA
+}
+
 resource "azurerm_linux_virtual_machine" "main" {
   name                            = "scrapAppVM"
   resource_group_name             = azurerm_resource_group.main.name

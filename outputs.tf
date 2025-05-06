@@ -8,12 +8,12 @@ output "postgresqlFQDN" {
   sensitive = true
 }*/
 
-output "ssPrivateKey" {
+output "sshPrivateKey" {
   value     = tls_private_key.ssh_key.private_key_pem
   sensitive = true
 }
 
-output "VMpublicIP" {
+output "vmPublicIP" {
   value     = azurerm_public_ip.main.ip_address
   sensitive = true
 }
