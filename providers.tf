@@ -6,11 +6,18 @@ terraform {
     }
   }
 
-  cloud {
+/*  cloud {
     organization = "ScrapApp"
     workspaces {
       name = "ScrapApp_Production"
     }
+  }*/
+
+backend "azurerm" {
+  resource_group_name  = "terraformBackendRG"
+  storage_account_name = "terraformbackendfk"
+  container_name       = "tfbackend"
+  key                  = "terraform.tfstate"
   }
 }
 
